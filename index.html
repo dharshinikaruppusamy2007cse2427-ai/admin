@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Pulse — Student Complaint Management</title>
+  <meta name="description" content="Student Complaint Management System - Admin Dashboard for managing and resolving student complaints efficiently." />
+  <title>Admin Dashboard — Student Complaint Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
@@ -20,6 +23,9 @@
         </div>
         <div class="login-tabs">
           <button class="login-tab active" data-role="Student">Student</button>
+          <button class="login-tab" data-role="HOD">HOD</button>
+          <button class="login-tab" data-role="Principal">Principal</button>
+          <button class="login-tab" data-role="Admin">Admin</button>
         </div>
         <form id="loginForm" class="login-form">
           <div class="form-group">
@@ -30,7 +36,7 @@
             <label>Password</label>
             <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password" value="password123" />
           </div>
-          <button type="submit" class="btn btn-primary w-100" id="loginBtn">Login</button>
+          <button type="submit" class="btn btn-primary w-100" id="loginBtn">Login as Student</button>
         </form>
       </div>
     </div>
@@ -65,7 +71,7 @@
       <div class="page-header text-center" style="justify-content: center;">
         <div style="text-align: center; width: 100%;">
           <h1>Welcome, <span id="studentWelcomeName">Student</span></h1>
-          <p class="page-subtitle">Submit new complaints or browse and vote on existing ones.</p>
+          <p class="page-subtitle">Submit new complaints or check the status of your existing ones.</p>
         </div>
       </div>
 
@@ -79,47 +85,622 @@
             <form id="studentComplaintForm">
               <div class="form-group">
                 <label>Complaint Title</label>
-                <input type="text" id="newComplaintTitle" class="form-input" required placeholder="E.g., Water cooler not working in Block B" />
+                <input type="text" id="newComplaintTitle" class="form-input" required placeholder="E.g., Wi-Fi not working in library" />
               </div>
               <div class="form-group">
-                <label>Department / Category</label>
+                <label>Category</label>
                 <select id="newComplaintCategory" class="form-select" required>
-                  <option value="" disabled selected>Select Department</option>
-                  <option value="MECHANICAL">MECHANICAL</option>
-                  <option value="EEE">EEE</option>
-                  <option value="CSE">CSE</option>
-                  <option value="HOSTEL">HOSTEL</option>
-                  <option value="GENERAL">GENERAL</option>
+                  <option value="" disabled selected>Select Category</option>
+                  <option value="Academic">Academic</option>
+                  <option value="Hostel">Hostel</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Infrastructure">Infrastructure</option>
+                  <option value="Other">Other</option>
                 </select>
-              </div>
-              <div class="form-group" style="display: flex; gap: 8px; align-items: center; margin-top: -8px; margin-bottom: 16px;">
-                <input type="checkbox" id="postAnonymous" />
-                <label for="postAnonymous" style="margin-bottom: 0; font-weight: 500; font-size: 13px; cursor: pointer;">Post Anonymously</label>
               </div>
               <div class="form-group">
                 <label>Description</label>
-                <textarea id="newComplaintDesc" class="form-textarea" rows="3" required placeholder="Provide details about your complaint..."></textarea>
+                <textarea id="newComplaintDesc" class="form-textarea" rows="4" required placeholder="Provide details about your complaint..."></textarea>
               </div>
               <button type="submit" class="btn btn-primary w-100">Submit Complaint</button>
             </form>
           </div>
         </div>
 
-        <!-- Complaint Feed -->
-        <div class="complaint-feed-container">
+        <!-- My Complaints Feed -->
+        <div class="student-complaints-list">
           <div style="margin-bottom: 16px;">
-            <h2 style="font-size: 20px; font-weight: 700;">Recent Complaints</h2>
+            <h2 style="font-size: 20px; font-weight: 700; color: var(--text);">Complaint Feed</h2>
           </div>
-          <div id="studentComplaintFeed" class="complaint-feed">
+          <div id="studentComplaintsBody" class="complaint-feed-container">
             <!-- Cards injected by JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== ADMIN VIEW ===== -->
+  <div id="view-admin" class="view">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span class="logo-text">ComplaintHub</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close sidebar">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="complaints" id="nav-complaints">
+            <i class="fas fa-clipboard-list"></i><span>Complaints</span>
+            <span class="nav-badge">24</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="pending" id="nav-pending">
+            <i class="fas fa-clock"></i><span>Pending</span>
+            <span class="nav-badge warning">8</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="inprogress" id="nav-inprogress">
+            <i class="fas fa-spinner"></i><span>In Progress</span>
+            <span class="nav-badge info">6</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="resolved" id="nav-resolved">
+            <i class="fas fa-check-circle"></i><span>Resolved</span>
+            <span class="nav-badge success">10</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-divider"></div>
+
+      <ul>
+        <li>
+          <a href="#" class="nav-link" data-page="settings" id="nav-settings">
+            <i class="fas fa-cog"></i><span>Settings</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" id="nav-logout">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-card">
+        <i class="fas fa-headset"></i>
+        <p>Need help?</p>
+        <a href="#">Contact Support</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN WRAPPER ===== -->
+  <div class="main-wrapper" id="mainWrapper">
+    <!-- ===== TOP NAVBAR ===== -->
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="search-box" id="searchBox">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search complaints, students…" id="globalSearch" />
+          <kbd>Ctrl+K</kbd>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" id="notificationBtn" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+        <button class="topbar-icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="topbar-divider"></div>
+        <button class="topbar-icon-btn" id="adminLogoutBtn" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+        <div class="admin-profile" id="adminProfile">
+          <div class="admin-avatar">
+            <span>A</span>
+          </div>
+          <div class="admin-info">
+            <span class="admin-name">Admin User</span>
+            <span class="admin-role">Super Admin</span>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notifications Dropdown -->
+    <div class="notifications-dropdown" id="notificationsDropdown">
+      <div class="notifications-header">
+        <h3>Notifications</h3>
+        <button class="mark-all-read">Mark all read</button>
+      </div>
+      <div class="notifications-list">
+        <div class="notification-item unread">
+          <div class="notification-icon blue"><i class="fas fa-plus-circle"></i></div>
+          <div class="notification-content">
+            <p>New complaint from <strong>Rahul Sharma</strong></p>
+            <span>2 minutes ago</span>
+          </div>
+        </div>
+        <div class="notification-item unread">
+          <div class="notification-icon green"><i class="fas fa-check-circle"></i></div>
+          <div class="notification-content">
+            <p>Complaint <strong>#1018</strong> has been resolved</p>
+            <span>15 minutes ago</span>
+          </div>
+        </div>
+        <div class="notification-item">
+          <div class="notification-icon yellow"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="notification-content">
+            <p>Complaint <strong>#1015</strong> is overdue</p>
+            <span>1 hour ago</span>
+          </div>
+        </div>
+        <div class="notification-item">
+          <div class="notification-icon blue"><i class="fas fa-comment"></i></div>
+          <div class="notification-content">
+            <p>Reply added to complaint <strong>#1012</strong></p>
+            <span>3 hours ago</span>
+          </div>
+        </div>
+      </div>
+      <div class="notifications-footer">
+        <a href="#">View all notifications</a>
+      </div>
+    </div>
+
+    <!-- ===== CONTENT AREA ===== -->
+    <main class="content" id="content">
+
+      <!-- ========== DASHBOARD PAGE ========== -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="page-subtitle">Welcome back, Admin! Here's your complaint overview.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline" id="exportBtn"><i class="fas fa-download"></i> Export</button>
+            <button class="btn btn-primary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="stats-grid">
+          <div class="stat-card" id="statTotal">
+            <div class="stat-card-icon blue">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="stat-card-info">
+              <span class="stat-label">Total Complaints</span>
+              <span class="stat-value" id="totalCount">24</span>
+              <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% from last month</span>
+            </div>
+          </div>
+          <div class="stat-card" id="statPending">
+            <div class="stat-card-icon yellow">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-card-info">
+              <span class="stat-label">Pending</span>
+              <span class="stat-value" id="pendingCount">8</span>
+              <span class="stat-change negative"><i class="fas fa-arrow-up"></i> 3% from last month</span>
+            </div>
+          </div>
+          <div class="stat-card" id="statInProgress">
+            <div class="stat-card-icon indigo">
+              <i class="fas fa-spinner"></i>
+            </div>
+            <div class="stat-card-info">
+              <span class="stat-label">In Progress</span>
+              <span class="stat-value" id="inProgressCount">6</span>
+              <span class="stat-change positive"><i class="fas fa-arrow-down"></i> 5% from last month</span>
+            </div>
+          </div>
+          <div class="stat-card" id="statResolved">
+            <div class="stat-card-icon green">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-card-info">
+              <span class="stat-label">Resolved</span>
+              <span class="stat-value" id="resolvedCount">10</span>
+              <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 18% from last month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2>Complaint Trends</h2>
+              <div class="card-header-actions">
+                <select class="select-sm" id="trendPeriod">
+                  <option>Last 7 days</option>
+                  <option selected>Last 30 days</option>
+                  <option>Last 90 days</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-placeholder" id="trendChart">
+                <div class="bar-chart">
+                  <div class="bar-group">
+                    <div class="bar" style="height: 40%;" data-value="8"><span class="bar-label">Mon</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 65%;" data-value="13"><span class="bar-label">Tue</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 45%;" data-value="9"><span class="bar-label">Wed</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 80%;" data-value="16"><span class="bar-label">Thu</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 55%;" data-value="11"><span class="bar-label">Fri</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 30%;" data-value="6"><span class="bar-label">Sat</span></div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 20%;" data-value="4"><span class="bar-label">Sun</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2>Status Distribution</h2>
+            </div>
+            <div class="card-body">
+              <div class="donut-chart-wrapper">
+                <div class="donut-chart" id="donutChart">
+                  <svg viewBox="0 0 36 36">
+                    <circle class="donut-ring" cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#e5e7eb" stroke-width="3"></circle>
+                    <circle class="donut-segment" cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#f59e0b" stroke-width="3" stroke-dasharray="33.3 66.7" stroke-dashoffset="25"></circle>
+                    <circle class="donut-segment" cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#2563eb" stroke-width="3" stroke-dasharray="25 75" stroke-dashoffset="91.7"></circle>
+                    <circle class="donut-segment" cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#10b981" stroke-width="3" stroke-dasharray="41.7 58.3" stroke-dashoffset="66.7"></circle>
+                  </svg>
+                  <div class="donut-center">
+                    <span class="donut-total">24</span>
+                    <span class="donut-label">Total</span>
+                  </div>
+                </div>
+                <div class="donut-legend">
+                  <div class="legend-item"><span class="legend-dot yellow"></span> Pending (8)</div>
+                  <div class="legend-item"><span class="legend-dot blue"></span> In Progress (6)</div>
+                  <div class="legend-item"><span class="legend-dot green"></span> Resolved (10)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Complaints Table -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Complaints</h2>
+            <a href="#" class="view-all-link" data-page="complaints">View All <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="card-body no-padding">
+            <div class="table-responsive">
+              <table class="data-table" id="recentTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Complaint Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTableBody">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== COMPLAINTS PAGE ========== -->
+      <section class="page" id="page-complaints">
+        <div class="page-header">
+          <div>
+            <h1>All Complaints</h1>
+            <p class="page-subtitle">Manage and review all student complaints.</p>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar" id="filtersBar">
+          <div class="filter-group">
+            <div class="search-box inline">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search by name or title…" id="complaintsSearch" />
+            </div>
+          </div>
+          <div class="filter-group">
+            <select class="select-sm" id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+            <select class="select-sm" id="dateFilter">
+              <option value="all">All Dates</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+            <button class="btn btn-outline btn-sm" id="clearFilters"><i class="fas fa-times"></i> Clear</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body no-padding">
+            <div class="table-responsive">
+              <table class="data-table" id="complaintsTable">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Complaint Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="complaintsTableBody">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="table-info" id="tableInfo">Showing 1-10 of 24 complaints</span>
+            <div class="pagination" id="pagination">
+              <button class="page-btn" id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== PENDING / IN PROGRESS / RESOLVED PAGES ========== -->
+      <section class="page" id="page-pending">
+        <div class="page-header">
+          <div>
+            <h1>Pending Complaints</h1>
+            <p class="page-subtitle">Complaints awaiting review and action.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body no-padding">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Complaint Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="pendingTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-inprogress">
+        <div class="page-header">
+          <div>
+            <h1>In Progress</h1>
+            <p class="page-subtitle">Complaints currently being addressed.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body no-padding">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Complaint Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="inprogressTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-resolved">
+        <div class="page-header">
+          <div>
+            <h1>Resolved Complaints</h1>
+            <p class="page-subtitle">Successfully resolved student complaints.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body no-padding">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Complaint Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="resolvedTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SETTINGS PAGE ========== -->
+      <section class="page" id="page-settings">
+        <div class="page-header">
+          <div>
+            <h1>Settings</h1>
+            <p class="page-subtitle">Manage your account and preferences.</p>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="card">
+            <div class="card-header"><h2>Profile Information</h2></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="settingsName">Full Name</label>
+                <input type="text" id="settingsName" class="form-input" value="Admin User" />
+              </div>
+              <div class="form-group">
+                <label for="settingsEmail">Email Address</label>
+                <input type="email" id="settingsEmail" class="form-input" value="admin@university.edu" />
+              </div>
+              <div class="form-group">
+                <label for="settingsRole">Role</label>
+                <input type="text" id="settingsRole" class="form-input" value="Super Admin" disabled />
+              </div>
+              <button class="btn btn-primary">Save Changes</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2>Notification Preferences</h2></div>
+            <div class="card-body">
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <span>Email notifications</span>
+                  <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+                </label>
+              </div>
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <span>New complaint alerts</span>
+                  <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+                </label>
+              </div>
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <span>Status update alerts</span>
+                  <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+                </label>
+              </div>
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <span>Weekly reports</span>
+                  <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== COMPLAINT DETAIL MODAL ========== -->
+      <div class="modal-overlay" id="complaintModal">
+        <div class="modal" id="modalContent">
+          <div class="modal-header">
+            <h2 id="modalTitle">Complaint Details</h2>
+            <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Complaint ID</span>
+                <span class="detail-value" id="detailId"></span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Student Name</span>
+                <span class="detail-value" id="detailStudent"></span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Date Submitted</span>
+                <span class="detail-value" id="detailDate"></span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Current Status</span>
+                <span class="detail-value" id="detailStatus"></span>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h3>Complaint Title</h3>
+              <p id="detailTitle" class="detail-title-text"></p>
+            </div>
+            <div class="detail-section">
+              <h3>Description</h3>
+              <p id="detailDescription" class="detail-description-text"></p>
+            </div>
+            <div class="detail-section">
+              <h3>Update Status</h3>
+              <select class="form-select" id="detailStatusUpdate">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="detail-section">
+              <h3>Admin Reply</h3>
+              <textarea class="form-textarea" id="detailReply" placeholder="Type your reply to the student…" rows="4"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" id="modalCancelBtn">Cancel</button>
+            <button class="btn btn-primary" id="modalSubmitBtn"><i class="fas fa-paper-plane"></i> Submit Response</button>
           </div>
         </div>
       </div>
 
       <!-- ========== TOAST ========== -->
       <div class="toast-container" id="toastContainer"></div>
+
     </main>
   </div>
+  </div> <!-- End view-admin -->
 
   <script src="app.js"></script>
 </body>
