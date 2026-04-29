@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Pulse — Student Complaint Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===== LOGIN VIEW ===== -->
+  <div id="view-login" class="view active">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h2>Campus Pulse</h2>
+          <p>Voice of the Students, Action by the Authorities</p>
+        </div>
+        <div class="login-tabs">
+          <button class="login-tab active" data-role="Student">Student</button>
+        </div>
+        <form id="loginForm" class="login-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" class="form-input" required placeholder="Enter your email" value="student@campuspulse.edu" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password" value="password123" />
+          </div>
+          <button type="submit" class="btn btn-primary w-100" id="loginBtn">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STUDENT VIEW ===== -->
+  <div id="view-student" class="view">
+    <header class="topbar student-topbar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span class="logo-text">Campus Pulse</span>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" id="themeToggleStudent" aria-label="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        <div class="topbar-divider"></div>
+        <button class="topbar-icon-btn" id="studentLogoutBtn" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+        <div class="admin-profile">
+          <div class="admin-avatar"><span>S</span></div>
+          <div class="admin-info">
+            <span class="admin-name" id="studentNameDisplay">Student User</span>
+            <span class="admin-role">Student</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="content student-content">
+      <div class="page-header text-center" style="justify-content: center;">
+        <div style="text-align: center; width: 100%;">
+          <h1>Welcome, <span id="studentWelcomeName">Student</span></h1>
+          <p class="page-subtitle">Submit new complaints or browse and vote on existing ones.</p>
+        </div>
+      </div>
+
+      <div class="student-grid">
+        <!-- Submit Form -->
+        <div class="card complaint-form-card">
+          <div class="card-header">
+            <h2>Submit Complaint</h2>
+          </div>
+          <div class="card-body">
+            <form id="studentComplaintForm">
+              <div class="form-group">
+                <label>Complaint Title</label>
+                <input type="text" id="newComplaintTitle" class="form-input" required placeholder="E.g., Water cooler not working in Block B" />
+              </div>
+              <div class="form-group">
+                <label>Department / Category</label>
+                <select id="newComplaintCategory" class="form-select" required>
+                  <option value="" disabled selected>Select Department</option>
+                  <option value="MECHANICAL">MECHANICAL</option>
+                  <option value="EEE">EEE</option>
+                  <option value="CSE">CSE</option>
+                  <option value="HOSTEL">HOSTEL</option>
+                  <option value="GENERAL">GENERAL</option>
+                </select>
+              </div>
+              <div class="form-group" style="display: flex; gap: 8px; align-items: center; margin-top: -8px; margin-bottom: 16px;">
+                <input type="checkbox" id="postAnonymous" />
+                <label for="postAnonymous" style="margin-bottom: 0; font-weight: 500; font-size: 13px; cursor: pointer;">Post Anonymously</label>
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea id="newComplaintDesc" class="form-textarea" rows="3" required placeholder="Provide details about your complaint..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Submit Complaint</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Complaint Feed -->
+        <div class="complaint-feed-container">
+          <div style="margin-bottom: 16px;">
+            <h2 style="font-size: 20px; font-weight: 700;">Recent Complaints</h2>
+          </div>
+          <div id="studentComplaintFeed" class="complaint-feed">
+            <!-- Cards injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TOAST ========== -->
+      <div class="toast-container" id="toastContainer"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
