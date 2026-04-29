@@ -114,7 +114,7 @@ function renderStudentComplaints() {
   const displayList = complaints.slice(0, 5);
   
   container.innerHTML = displayList.map((c, index) => {
-    const voteCount = Math.floor(Math.random() * 200) + 10;
+    if (c.votes === undefined) c.votes = Math.floor(Math.random() * 200) + 10;
     let badgeText = c.status.toUpperCase();
     let statusClass = 'status-pending';
     if (index === 0) { badgeText = 'ESCALATED TO HOD'; statusClass = 'status-escalated'; }
@@ -123,10 +123,10 @@ function renderStudentComplaints() {
     else if (c.status === 'In Progress') statusClass = 'status-inprogress';
     
     return `
-      <div class="complaint-feed-card">
+      <div class="complaint-feed-card" data-id="${c.id}">
         <div class="complaint-vote">
-          <button class="upvote-btn"><i class="fas fa-chevron-up"></i></button>
-          <span class="vote-count">${voteCount}</span>
+          <button class="upvote-btn ${c.voted ? 'voted' : ''}"><i class="fas fa-chevron-up"></i></button>
+          <span class="vote-count">${c.votes}</span>
         </div>
         <div class="complaint-feed-content">
           <div class="complaint-feed-meta">
@@ -151,6 +151,27 @@ function renderStudentComplaints() {
     `;
   }).join('');
 }
+
+// Event delegation for upvotes
+document.getElementById('studentComplaintsBody')?.addEventListener('click', (e) => {
+  const upvoteBtn = e.target.closest('.upvote-btn');
+  if (upvoteBtn) {
+    const card = upvoteBtn.closest('.complaint-feed-card');
+    if (!card) return;
+    const id = card.dataset.id;
+    const complaint = complaints.find(c => c.id === id);
+    if (complaint) {
+      if (!complaint.voted) {
+        complaint.votes = (complaint.votes || 0) + 1;
+        complaint.voted = true;
+      } else {
+        complaint.votes = complaint.votes - 1;
+        complaint.voted = false;
+      }
+      renderStudentComplaints();
+    }
+  }
+});
 
 studentComplaintForm?.addEventListener('submit', (e) => {
   e.preventDefault();
